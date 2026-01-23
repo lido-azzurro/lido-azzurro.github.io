@@ -16,20 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // Kur klikohet një pjatë, shfaq alert me emrin dhe çmimin
-  const dishItems = document.querySelectorAll('.sub-section ul li, #dessert ul li, #bevande ul li');
+  // Kur klikohet një pjatë (VETËM për artikujt pa foto)
+  const dishItemsWithoutImg = document.querySelectorAll('.sub-section ul li:not([data-img])');
   
-  dishItems.forEach(item => {
+  dishItemsWithoutImg.forEach(item => {
     item.addEventListener('click', () => {
       const fullText = item.textContent.trim();
-      const parts = fullText.split(" - ");
-      if (parts.length === 2) {
-        const dishName = parts[0];
-        const dishPrice = parts[1];
-        alert(dishName + "\ncosta: " + dishPrice);
-      } else {
-        alert("Il piatto: " + fullText);
-      }
+      // Thjesht mund të shtosh më vonë nëse dëshiron
     });
   });
   
