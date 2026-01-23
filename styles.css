@@ -148,7 +148,7 @@ body {
   margin: 5% auto;
   padding: 30px;
   border-radius: 8px;
-  width: 80%;
+  width: 90%;
   max-width: 600px;
   text-align: center;
   color: #333;
@@ -208,4 +208,29 @@ body {
   float: right; 
   height: 2em;
   width: auto;
+}
+
+/* MEDIA QUERIES */
+/* Tableta - 768px deri 1024px */
+@media (min-width: 768px) {
+  .modal-content {
+    width: 80%;
+    max-width: 800px;
+  }
+  
+  .modal-content img {
+    max-height: 500px;
+  }
+}
+
+/* Laptop/Desktop - 1025px dhe lart */
+@media (min-width: 1025px) {
+  .modal-content {
+    width: 70%;
+    max-width: 1000px;
+  }
+  
+  .modal-content img {
+    max-height: 600px;
+  }
 }
