@@ -226,11 +226,11 @@ body {
 /* Laptop/Desktop - 1025px dhe lart */
 @media (min-width: 1025px) {
   .modal-content {
-    width: 70%;
+    width: 75%;
     max-width: 1000px;
   }
   
   .modal-content img {
-    max-height: 600px;
+    max-height: 750px;
   }
 }
