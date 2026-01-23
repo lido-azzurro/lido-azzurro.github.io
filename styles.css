@@ -231,6 +231,6 @@ body {
   }
   
   .modal-content img {
-    max-height: 750px;
+    max-height: 500px;
   }
 }
