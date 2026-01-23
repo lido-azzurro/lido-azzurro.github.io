@@ -32,4 +32,37 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+  
+  // Modal functionality
+  const modal = document.getElementById('imageModal');
+  const closeBtn = document.querySelector('.close');
+  
+  const dishItemsWithImg = document.querySelectorAll('.sub-section ul li[data-img]');
+  
+  dishItemsWithImg.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const img = item.getAttribute('data-img');
+      const name = item.getAttribute('data-name');
+      const price = item.getAttribute('data-price');
+      const desc = item.getAttribute('data-desc');
+      
+      document.getElementById('modalImage').src = img;
+      document.getElementById('modalTitle').textContent = name;
+      document.getElementById('modalDesc').textContent = desc;
+      document.getElementById('modalPrice').textContent = "Çmim: " + price;
+      
+      modal.style.display = 'block';
+    });
+  });
+  
+  closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
 });

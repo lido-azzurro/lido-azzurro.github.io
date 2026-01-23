@@ -37,7 +37,10 @@
         <div class="sub-section">
           <h3>Antipasti</h3>
           <ul>
-            <li>Focaccia bianca - 4.00€<img src="https://github.com/lido-azzurro/lido-azzurro.github.io/blob/main/img-1.jpeg?raw=true" class="img"/></li>
+            <li data-img="https://raw.githubusercontent.com/lido-azzurro/lido-azzurro.github.io/main/img-1.jpeg" data-name="Focaccia bianca" data-price="4.00€" data-desc="Focaccia bianca fresca">
+              <span>Focaccia bianca - 4.00€</span>
+              <img src="https://raw.githubusercontent.com/lido-azzurro/lido-azzurro.github.io/main/img-1.jpeg" class="dish-thumb" alt="Focaccia bianca"/>
+            </li>
             <li>Focaccia rossa - 4.50€</li>
             <li>Caprese - 10€</li>
             <li>Prosciutto crudo e melone - 14€</li>
@@ -227,4 +230,25 @@
           <li>SAUVIGNON FALLWIND - 32€</li>
           <li>LUGANA EUFRASIA - 15€</li>
           <li>LUGANA BROLETTINO - 32€</li>
-          <li>LUGANA CA DE
+          <li>LUGANA CA DEI FRATI - 28€</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Modal për fotot e mëdha -->
+    <div id="imageModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <img id="modalImage" src="" alt="Dish"/>
+        <h2 id="modalTitle"></h2>
+        <p id="modalDesc"></p>
+        <p id="modalPrice"></p>
+      </div>
+    </div>
+
+    <!-- Footer me sfondin e img3 -->
+    <footer class="bg-footer">
+      <p>© 2023 Lido Azzurro. Tutaj të drejtat janë të rezervuara.</p>
+    </footer>
+  </body>
+</html>
