@@ -29,10 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const dishItems = document.querySelectorAll('.sub-section ul li');
 
   dishItems.forEach(item => {
-    // derive name/slug early so we can check imageMap
     const text = item.getAttribute('data-name') || item.textContent.trim();
     const slug = text ? text.toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove diacritics
       .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : '';
 
     // If the item has a thumbnail or image attribute, use it; otherwise check imageMap
@@ -51,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const imgEl = document.createElement('img');
         imgEl.className = 'dish-thumb';
         imgEl.src = thumbSrc;
-        imgEl.alt = text || item.textContent.trim();
+        imgEl.alt = item.getAttribute('data-name') || item.textContent.trim();
         item.appendChild(imgEl); // places thumbnail to the right of the text
       }
     } else {
