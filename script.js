@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Modal functionality
   const modal = document.getElementById('imageModal');
-  const closeBtn = document.querySelector('.close');
+  const closeBtn = document.querySelector('#imageModal .close'); // më saktë
   
   // Map of known item slugs -> image URLs (add more as you upload)
   const imageMap = {
@@ -86,17 +86,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // Close modal handlers
-  if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      if (modal) modal.style.display = 'none';
+  // Përzgjedh të gjitha li me data-img (edhe nëse ka karaktere të çuditshme)
+  const dishItemsWithImg = document.querySelectorAll('.sub-section ul li[data-img]');
+
+  dishItemsWithImg.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const img = item.getAttribute('data-img');
+      const name = item.getAttribute('data-name');
+      const price = item.getAttribute('data-price');
+      const desc = item.getAttribute('data-desc');
+
+      // Kontrollo që img ekziston
+      if (img) {
+        document.getElementById('modalImage').src = img;
+        document.getElementById('modalTitle').textContent = name || '';
+        document.getElementById('modalDesc').textContent = desc || '';
+        document.getElementById('modalPrice').textContent = price ? "Çmim: " + price : '';
+        modal.style.display = 'block';
+      }
     });
-  }
-  
+  });
+
+  // Close modal handlers
+  closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    modal.style.display = 'none';
+    document.getElementById('modalImage').src = '';
+  });
+
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         modal.style.display = 'none';
+        document.getElementById('modalImage').src = '';
       }
     });
   }
