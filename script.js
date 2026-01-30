@@ -16,45 +16,95 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   
-  // Kur klikohet një pjatë (VETËM për artikujt pa foto)
-  const dishItemsWithoutImg = document.querySelectorAll('.sub-section ul li:not([data-img])');
-  
-  dishItemsWithoutImg.forEach(item => {
-    item.addEventListener('click', () => {
-      const fullText = item.textContent.trim();
-      // Thjesht mund të shtosh më vonë nëse dëshiron
-    });
-  });
-  
   // Modal functionality
   const modal = document.getElementById('imageModal');
   const closeBtn = document.querySelector('.close');
   
-  const dishItemsWithImg = document.querySelectorAll('.sub-section ul li[data-img]');
-  
-  dishItemsWithImg.forEach(item => {
+  // Map of known item slugs -> image URLs (add more as you upload)
+  const imageMap = {
+    '4-formaggi': 'https://raw.githubusercontent.com/lido-azzurro/lido-azzurro.github.io/main/4%20formaggi.png?raw=true'
+  };
+
+  // Select all dish items (me ose pa data-img)
+  const dishItems = document.querySelectorAll('.sub-section ul li');
+
+  dishItems.forEach(item => {
+    // derive name/slug early so we can check imageMap
+    const text = item.getAttribute('data-name') || item.textContent.trim();
+    const slug = text ? text.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : '';
+
+    // If the item has a thumbnail or image attribute, use it; otherwise check imageMap
+    let thumbSrc = item.getAttribute('data-thumb') || item.getAttribute('data-img');
+    if (!thumbSrc && slug && imageMap[slug]) {
+      thumbSrc = imageMap[slug];
+      // set attributes so modal and other logic see the image
+      item.setAttribute('data-thumb', thumbSrc);
+      item.setAttribute('data-img', thumbSrc);
+      console.info('Applied imageMap for', text, '->', thumbSrc);
+    }
+
+    if (thumbSrc) {
+      // avoid duplicating if page re-renders
+      if (!item.querySelector('.dish-thumb')) {
+        const imgEl = document.createElement('img');
+        imgEl.className = 'dish-thumb';
+        imgEl.src = thumbSrc;
+        imgEl.alt = text || item.textContent.trim();
+        item.appendChild(imgEl); // places thumbnail to the right of the text
+      }
+    } else {
+      // No explicit thumb: try to find one in /images/ based on name
+      attemptFindImage(item).catch(err => console.info('attemptFindImage error', err));
+    }
+
+    // Make every <li> clickable; if it has image/name/price/desc attributes, show modal
     item.addEventListener('click', (e) => {
       e.stopPropagation();
-      const img = item.getAttribute('data-img');
-      const name = item.getAttribute('data-name');
-      const price = item.getAttribute('data-price');
-      const desc = item.getAttribute('data-desc');
+      const img = item.getAttribute('data-img') || item.getAttribute('data-thumb') || '';
+      const name = item.getAttribute('data-name') || item.textContent.trim();
+      const price = item.getAttribute('data-price') || '';
+      const desc = item.getAttribute('data-desc') || '';
       
-      document.getElementById('modalImage').src = img;
-      document.getElementById('modalTitle').textContent = name;
-      document.getElementById('modalDesc').textContent = desc;
-      document.getElementById('modalPrice').textContent = "Prezzo: " + price;
+      // If there's nothing to show (no img/name/price/desc), don't open modal
+      if (!img && !name && !price && !desc) return;
       
-      modal.style.display = 'block';
+      const modalImage = document.getElementById('modalImage');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalDesc = document.getElementById('modalDesc');
+      const modalPrice = document.getElementById('modalPrice');
+      
+      if (modalImage) {
+        modalImage.src = img;
+        modalImage.alt = name;
+      }
+      if (modalTitle) modalTitle.textContent = name;
+      if (modalDesc) modalDesc.textContent = desc;
+      if (modalPrice) modalPrice.textContent = price ? ("Prezzo: " + price) : '';
+      
+      if (modal) modal.style.display = 'block';
     });
   });
   
-  closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-  });
+  // Close modal handlers
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      if (modal) modal.style.display = 'none';
+    });
+  }
   
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  }
+  
+  // Close modal with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.style.display === 'block') {
       modal.style.display = 'none';
     }
   });

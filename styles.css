@@ -122,12 +122,20 @@ body {
 .sub-section li:hover {
   background: rgba(0,0,0,0.6);
 }
-.dish-thumb {
-  height: 60px;
-  width: 60px;
+.sub-section ul li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* text left, thumbnail right */
+  gap: 12px;
+  padding-right: 8px;
+}
+
+/* thumbnail small image */
+.sub-section ul li .dish-thumb {
+  width: 48px;
+  height: 48px;
   object-fit: cover;
-  border-radius: 4px;
-  margin-left: 15px;
+  border-radius: 6px;
   flex-shrink: 0;
 }
 
@@ -192,6 +200,14 @@ body {
   font-size: 24px;
   font-weight: bold;
   color: #7ed957;
+}
+
+/* modal image responsive */
+#modalImage {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
 }
 
 /* FOOTER – sfondi nga img12 */
