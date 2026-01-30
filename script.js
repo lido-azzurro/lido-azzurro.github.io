@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  console.info('script.js loaded'); // debug
+
   // Funksionaliteti i ndërprerjes së tab-ve
   const tablinks = document.querySelectorAll('.tablink');
   const tabContents = document.querySelectorAll('.tab-content');
@@ -58,32 +60,28 @@ document.addEventListener('DOMContentLoaded', () => {
       attemptFindImage(item).catch(err => console.info('attemptFindImage error', err));
     }
 
-    // Make every <li> clickable; if it has image/name/price/desc attributes, show modal
-    item.addEventListener('click', (e) => {
+    const openModal = (e) => {
+      if (e && e.type === 'touchend') e.preventDefault();
       e.stopPropagation();
       const img = item.getAttribute('data-img') || item.getAttribute('data-thumb') || '';
       const name = item.getAttribute('data-name') || item.textContent.trim();
       const price = item.getAttribute('data-price') || '';
       const desc = item.getAttribute('data-desc') || '';
-      
-      // If there's nothing to show (no img/name/price/desc), don't open modal
       if (!img && !name && !price && !desc) return;
-      
       const modalImage = document.getElementById('modalImage');
       const modalTitle = document.getElementById('modalTitle');
       const modalDesc = document.getElementById('modalDesc');
       const modalPrice = document.getElementById('modalPrice');
-      
-      if (modalImage) {
-        modalImage.src = img;
-        modalImage.alt = name;
-      }
+      if modalImage) { modalImage.src = img; modalImage.alt = name; }
       if (modalTitle) modalTitle.textContent = name;
       if (modalDesc) modalDesc.textContent = desc;
       if (modalPrice) modalPrice.textContent = price ? ("Prezzo: " + price) : '';
-      
-      if (modal) modal.style.display = 'block';
-    });
+      if (modal) { modal.style.display = 'block'; console.info('Opened modal for', name); }
+    };
+
+    // attach both click and touchend for mobile reliability
+    item.addEventListener('click', openModal);
+    item.addEventListener('touchend', openModal);
   });
   
   // Përzgjedh të gjitha li me data-img (edhe nëse ka karaktere të çuditshme)
@@ -108,18 +106,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Close modal handlers
-  closeBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    modal.style.display = 'none';
-    document.getElementById('modalImage').src = '';
-  });
+  // Close modal handlers (use both click + touchend)
+  if (closeBtn) {
+    const closeHandler = (e) => {
+      if (e && e.type === 'touchend') e.preventDefault();
+      e.stopPropagation();
+      if (modal) modal.style.display = 'none';
+      const modalImage = document.getElementById('modalImage');
+      if (modalImage) modalImage.src = '';
+      console.info('Modal closed');
+    };
+    closeBtn.addEventListener('click', closeHandler);
+    closeBtn.addEventListener('touchend', closeHandler);
+  }
 
   if (modal) {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         modal.style.display = 'none';
-        document.getElementById('modalImage').src = '';
+        const modalImage = document.getElementById('modalImage');
+        if (modalImage) modalImage.src = '';
+        console.info('Modal closed by backdrop');
       }
     });
   }
@@ -128,6 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal && modal.style.display === 'block') {
       modal.style.display = 'none';
+      const modalImage = document.getElementById('modalImage');
+      if (modalImage) modalImage.src = '';
+      console.info('Modal closed by Escape');
     }
   });
 });
