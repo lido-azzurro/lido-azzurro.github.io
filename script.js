@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('modalImage').src = img;
       document.getElementById('modalTitle').textContent = name;
       document.getElementById('modalDesc').textContent = desc;
-      document.getElementById('modalPrice').textContent = "Çmim: " + price;
+      document.getElementById('modalPrice').textContent = "Prezzo: " + price;
       
       modal.style.display = 'block';
     });
