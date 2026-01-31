@@ -62,9 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
         imgEl.alt = item.getAttribute('data-name') || item.textContent.trim();
         item.appendChild(imgEl); // places thumbnail to the right of the text
       }
-    } else {
-      // No explicit thumb: try to find one in /images/ based on name
-      attemptFindImage(item).catch(err => console.info('attemptFindImage error', err));
     }
 
     const openModal = (e) => {
