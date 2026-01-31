@@ -29,10 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.info('Modal closed');
   };
   
-  // Map of known item slugs -> image URLs (add more as you upload)
-  const imageMap = {
-    '4-formaggi': 'https://raw.githubusercontent.com/lido-azzurro/lido-azzurro.github.io/main/4%20formaggi.png?raw=true'
-  };
+  // Map of known item slugs -> image URLs (fallback when data-img not set)
+  const imageMap = {};
 
   // Select all dish items (me ose pa data-img)
   const dishItems = document.querySelectorAll('.sub-section ul li');
