@@ -112,31 +112,53 @@ body {
   background: rgba(0,0,0,0.4);
   color: #fff;
   border-radius: 4px;
-  cursor: pointer;
+  cursor: default;
   transition: background 0.3s ease;
-  font-size: 28px;
+  font-size: 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
-}
-.sub-section li:hover {
-  background: rgba(0,0,0,0.6);
 }
 .sub-section ul li {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* text left, thumbnail right */
+  justify-content: flex-start;
   gap: 12px;
   padding-right: 8px;
 }
 
-/* thumbnail small image */
+/* thumbnail - on left, 1.4× larger (48→68px), only this is clickable */
 .sub-section ul li .dish-thumb {
-  width: 48px;
-  height: 48px;
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
+  min-height: 68px;
   object-fit: cover;
   border-radius: 6px;
   flex-shrink: 0;
+  cursor: pointer;
+  order: -1;
+}
+.sub-section ul li .modal-trigger {
+  width: 68px;
+  height: 68px;
+  min-width: 68px;
+  min-height: 68px;
+  flex-shrink: 0;
+  cursor: pointer;
+  order: -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.2);
+  border-radius: 6px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  font-family: Georgia, serif;
+}
+.sub-section ul li .modal-trigger:hover {
+  background: rgba(255,255,255,0.3);
 }
 
 /* Modal */

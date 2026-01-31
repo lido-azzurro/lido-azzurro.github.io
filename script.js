@@ -51,15 +51,25 @@ document.addEventListener('DOMContentLoaded', () => {
       console.info('Applied imageMap for', text, '->', thumbSrc);
     }
 
+    let triggerEl = null;
     if (thumbSrc) {
-      // avoid duplicating if page re-renders
       if (!item.querySelector('.dish-thumb')) {
         const imgEl = document.createElement('img');
         imgEl.className = 'dish-thumb';
         imgEl.src = thumbSrc;
         imgEl.alt = item.getAttribute('data-name') || item.textContent.trim();
-        item.appendChild(imgEl); // places thumbnail to the right of the text
+        item.insertBefore(imgEl, item.firstChild);
       }
+      triggerEl = item.querySelector('.dish-thumb');
+    } else if (item.hasAttribute('data-name') || item.hasAttribute('data-price') || item.hasAttribute('data-desc')) {
+      if (!item.querySelector('.modal-trigger')) {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'modal-trigger';
+        placeholder.setAttribute('aria-label', 'Vedi dettagli');
+        placeholder.textContent = 'i';
+        item.insertBefore(placeholder, item.firstChild);
+      }
+      triggerEl = item.querySelector('.modal-trigger');
     }
 
     const openModal = (e) => {
@@ -94,9 +104,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     };
 
-    // attach both click and touchend for mobile reliability
-    item.addEventListener('click', openModal);
-    item.addEventListener('touchend', openModal);
+    if (triggerEl) {
+      triggerEl.addEventListener('click', openModal);
+      triggerEl.addEventListener('touchend', openModal, { passive: false });
+    }
   });
   
   // Close modal: event delegation on the modal so X button and backdrop both work
