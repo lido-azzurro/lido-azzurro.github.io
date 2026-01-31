@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Close modal with Escape key
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal && modal.style.display === 'block') {
+    if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
       modal.style.display = 'none';
       const modalImage = document.getElementById('modalImage');
       if (modalImage) modalImage.src = '';
