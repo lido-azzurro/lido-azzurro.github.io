@@ -100,6 +100,37 @@ body {
   font-size: 26px;
   text-decoration: underline;
 }
+
+#cibo .sub-section h3 {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#cibo .sub-section h3:focus {
+  outline: 2px solid #7ed957;
+  outline-offset: 4px;
+}
+
+#cibo .sub-section h3::after {
+  content: '+';
+  font-weight: 600;
+}
+
+#cibo .sub-section.open h3::after {
+  content: '–';
+}
+
+#cibo .sub-section ul,
+#cibo .sub-section .note {
+  display: none;
+}
+
+#cibo .sub-section.open ul,
+#cibo .sub-section.open .note {
+  display: block;
+}
 .sub-section ul {
   list-style: none;
   padding-left: 0;

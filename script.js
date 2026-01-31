@@ -17,6 +17,45 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById(tabId).classList.add('active');
     });
   });
+
+  // Accordion behavior for Food sections (Cibo)
+  const ciboTab = document.getElementById('cibo');
+  if (ciboTab) {
+    const sections = Array.from(ciboTab.querySelectorAll('.sub-section'));
+    const closeAllSectionsExcept = (keep) => {
+      sections.forEach((s) => {
+        if (keep && s === keep) return;
+        s.classList.remove('open');
+        const h = s.querySelector('h3');
+        if (h) h.setAttribute('aria-expanded', 'false');
+      });
+    };
+
+    sections.forEach((section) => {
+      const header = section.querySelector('h3');
+      if (!header) return;
+
+      header.setAttribute('role', 'button');
+      header.setAttribute('tabindex', '0');
+      header.setAttribute('aria-expanded', section.classList.contains('open') ? 'true' : 'false');
+
+      const toggle = (e) => {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        const willOpen = !section.classList.contains('open');
+        closeAllSectionsExcept(willOpen ? section : null);
+        section.classList.toggle('open', willOpen);
+        header.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      };
+
+      header.addEventListener('click', toggle);
+      header.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') toggle(e);
+      });
+    });
+  }
   
   // Modal functionality
   const modal = document.getElementById('imageModal');
