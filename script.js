@@ -20,7 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Modal functionality
   const modal = document.getElementById('imageModal');
-  const closeBtn = document.querySelector('#imageModal .close'); // më saktë
+  
+  const closeModal = () => {
+    if (modal) modal.style.display = 'none';
+    const modalImage = document.getElementById('modalImage');
+    if (modalImage) modalImage.src = '';
+    document.body.classList.remove('modal-open');
+    console.info('Modal closed');
+  };
   
   // Map of known item slugs -> image URLs (add more as you upload)
   const imageMap = {
@@ -88,40 +95,28 @@ document.addEventListener('DOMContentLoaded', () => {
     item.addEventListener('touchend', openModal);
   });
   
-  // Close modal handlers (use both click + touchend)
-  if (closeBtn) {
-    const closeHandler = (e) => {
-      if (e && e.type === 'touchend') e.preventDefault();
-      e.stopPropagation();
-      if (modal) modal.style.display = 'none';
-      const modalImage = document.getElementById('modalImage');
-      if (modalImage) modalImage.src = '';
-      document.body.classList.remove('modal-open'); // restore scroll
-      console.info('Modal closed');
-    };
-    closeBtn.addEventListener('click', closeHandler);
-    closeBtn.addEventListener('touchend', closeHandler);
-  }
-
+  // Close modal: event delegation on the modal so X button and backdrop both work
   if (modal) {
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.style.display = 'none';
-        const modalImage = document.getElementById('modalImage');
-        if (modalImage) modalImage.src = '';
-        document.body.classList.remove('modal-open'); // restore scroll
-        console.info('Modal closed by backdrop');
+      if (e.target === modal || e.target.closest('.close')) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeModal();
       }
     });
+    modal.addEventListener('touchend', (e) => {
+      if (e.target === modal || e.target.closest('.close')) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeModal();
+      }
+    }, { passive: false });
   }
-  
+
   // Close modal with Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
-      modal.style.display = 'none';
-      const modalImage = document.getElementById('modalImage');
-      if (modalImage) modalImage.src = '';
-      console.info('Modal closed by Escape');
+      closeModal();
     }
   });
 });
