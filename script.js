@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : '';
 
     // If the item has a thumbnail or image attribute, use it; otherwise check imageMap
-    let thumbSrc = item.getAttribute('data-thumb') || item.getAttribute('data-img');
+    const existingThumbEl = item.querySelector('img.dish-thumb');
+    let thumbSrc = item.getAttribute('data-thumb') || item.getAttribute('data-img') || (existingThumbEl ? existingThumbEl.getAttribute('src') : null);
     if (!thumbSrc && slug && imageMap[slug]) {
       thumbSrc = imageMap[slug];
       // set attributes so modal and other logic see the image
@@ -51,9 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
       console.info('Applied imageMap for', text, '->', thumbSrc);
     }
 
+    if (thumbSrc) {
+      if (!item.hasAttribute('data-thumb')) item.setAttribute('data-thumb', thumbSrc);
+      if (!item.hasAttribute('data-img')) item.setAttribute('data-img', thumbSrc);
+    }
+
     let triggerEl = null;
     if (thumbSrc) {
-      if (!item.querySelector('.dish-thumb')) {
+      if (existingThumbEl) {
+        if (!existingThumbEl.getAttribute('src') && thumbSrc) existingThumbEl.setAttribute('src', thumbSrc);
+      } else if (!item.querySelector('.dish-thumb')) {
         const imgEl = document.createElement('img');
         imgEl.className = 'dish-thumb';
         imgEl.src = thumbSrc;
@@ -61,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         item.insertBefore(imgEl, item.firstChild);
       }
       triggerEl = item.querySelector('.dish-thumb');
-    } else if (item.hasAttribute('data-name') || item.hasAttribute('data-price') || item.hasAttribute('data-desc')) {
+    } else if ((item.textContent || '').trim() !== '') {
       if (!item.querySelector('.modal-trigger')) {
         const placeholder = document.createElement('div');
         placeholder.className = 'modal-trigger';
@@ -76,7 +84,24 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e && e.type === 'touchend') e.preventDefault();
       e.stopPropagation();
       const img = item.getAttribute('data-img') || item.getAttribute('data-thumb') || '';
-      const name = item.getAttribute('data-name') || item.textContent.trim();
+      const getItemText = () => {
+        const parts = [];
+        item.childNodes.forEach((node) => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            const t = (node.textContent || '').trim();
+            if (t) parts.push(t);
+            return;
+          }
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            const el = node;
+            if (el.classList && (el.classList.contains('modal-trigger') || el.classList.contains('dish-thumb'))) return;
+            const t = (el.textContent || '').trim();
+            if (t) parts.push(t);
+          }
+        });
+        return parts.join(' ').replace(/\s+/g, ' ').trim();
+      };
+      const name = item.getAttribute('data-name') || getItemText();
       const price = item.getAttribute('data-price') || '';
       const desc = item.getAttribute('data-desc') || '';
       if (!img && !name && !price && !desc) return;
