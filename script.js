@@ -72,11 +72,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const modalTitle = document.getElementById('modalTitle');
       const modalDesc = document.getElementById('modalDesc');
       const modalPrice = document.getElementById('modalPrice');
-      if modalImage) { modalImage.src = img; modalImage.alt = name; }
+      if (modalImage) { modalImage.src = img; modalImage.alt = name; } // <-- fixed syntax
       if (modalTitle) modalTitle.textContent = name;
       if (modalDesc) modalDesc.textContent = desc;
       if (modalPrice) modalPrice.textContent = price ? ("Prezzo: " + price) : '';
-      if (modal) { modal.style.display = 'block'; console.info('Opened modal for', name); }
+      if (modal) { 
+        modal.style.display = 'flex';          // center using flex
+        document.body.classList.add('modal-open'); // prevent background scroll
+        console.info('Opened modal for', name);
+      }
     };
 
     // attach both click and touchend for mobile reliability
@@ -84,28 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
     item.addEventListener('touchend', openModal);
   });
   
-  // Përzgjedh të gjitha li me data-img (edhe nëse ka karaktere të çuditshme)
-  const dishItemsWithImg = document.querySelectorAll('.sub-section ul li[data-img]');
-
-  dishItemsWithImg.forEach(item => {
-    item.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const img = item.getAttribute('data-img');
-      const name = item.getAttribute('data-name');
-      const price = item.getAttribute('data-price');
-      const desc = item.getAttribute('data-desc');
-
-      // Kontrollo që img ekziston
-      if (img) {
-        document.getElementById('modalImage').src = img;
-        document.getElementById('modalTitle').textContent = name || '';
-        document.getElementById('modalDesc').textContent = desc || '';
-        document.getElementById('modalPrice').textContent = price ? "Çmim: " + price : '';
-        modal.style.display = 'block';
-      }
-    });
-  });
-
   // Close modal handlers (use both click + touchend)
   if (closeBtn) {
     const closeHandler = (e) => {
@@ -114,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (modal) modal.style.display = 'none';
       const modalImage = document.getElementById('modalImage');
       if (modalImage) modalImage.src = '';
+      document.body.classList.remove('modal-open'); // restore scroll
       console.info('Modal closed');
     };
     closeBtn.addEventListener('click', closeHandler);
@@ -126,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = 'none';
         const modalImage = document.getElementById('modalImage');
         if (modalImage) modalImage.src = '';
+        document.body.classList.remove('modal-open'); // restore scroll
         console.info('Modal closed by backdrop');
       }
     });
