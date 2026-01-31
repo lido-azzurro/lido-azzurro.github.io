@@ -74,7 +74,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const modalTitle = document.getElementById('modalTitle');
       const modalDesc = document.getElementById('modalDesc');
       const modalPrice = document.getElementById('modalPrice');
-      if (modalImage) { modalImage.src = img; modalImage.alt = name; } // <-- fixed syntax
+      if (modalImage) {
+        if (img) {
+          modalImage.src = img;
+          modalImage.alt = name;
+          modalImage.style.display = '';
+        } else {
+          modalImage.src = '';
+          modalImage.style.display = 'none';
+        }
+      }
       if (modalTitle) modalTitle.textContent = name;
       if (modalDesc) modalDesc.textContent = desc;
       if (modalPrice) modalPrice.textContent = price ? ("Prezzo: " + price) : '';
