@@ -116,10 +116,12 @@ body {
 #cibo .sub-section h3::after {
   content: '⌄';
   font-weight: 600;
+  text-decoration: none;
 }
 
 #cibo .sub-section.open h3::after {
   content: '⌃';
+  text-decoration: none;
 }
 
 #cibo .sub-section ul,
