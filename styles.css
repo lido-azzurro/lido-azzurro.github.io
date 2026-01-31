@@ -115,7 +115,7 @@ body {
 
 #cibo .sub-section h3::after {
   content: '⌄';
-  font-weight: 600;
+  font-weight: 800;
   text-decoration: none;
 }
 
