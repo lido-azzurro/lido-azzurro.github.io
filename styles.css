@@ -114,12 +114,12 @@ body {
 }
 
 #cibo .sub-section h3::after {
-  content: '+';
+  content: '⌄';
   font-weight: 600;
 }
 
 #cibo .sub-section.open h3::after {
-  content: '–';
+  content: '⌃';
 }
 
 #cibo .sub-section ul,
