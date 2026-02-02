@@ -12,7 +12,16 @@
     <a class="brand" href="./">Water System Lab</a>
     <nav class="nav">
       <a class="nav__link" href="./">Overview</a>
-      <a class="nav__link is-active" href="simulations.html">Simulations</a>
+      <details class="nav-item" aria-label="Simulations menu">
+        <summary class="nav__link has-menu is-active">Simulations <span class="nav__caret" aria-hidden="true"></span></summary>
+        <div class="nav-menu">
+          <a href="#pumping" data-sim="pumping">Pumping</a>
+          <a href="#solar" data-sim="solar">Solar Supply</a>
+          <a href="#filtration" data-sim="filtration">Filtration</a>
+          <a href="#hardness" data-sim="hardness">Hardness</a>
+          <a href="#treatment" data-sim="treatment">Treatment</a>
+        </div>
+      </details>
       <a class="nav__link" href="model.html">Scientific Model</a>
       <a class="nav__link" href="impact.html">Impact</a>
     </nav>
@@ -21,17 +30,15 @@
   <main class="container">
     <section class="sim-header">
       <h1 class="page-title">Simulations</h1>
-      <p class="muted">Select a module. Inputs update outputs in real time. Models are simplified but physically/chemically consistent.</p>
     </section>
 
     <section class="sim-layout">
       <aside class="tabs" aria-label="Simulation selector">
-        <button class="tab" data-sim="pumping">1. Pumping</button>
-        <button class="tab" data-sim="solar">2. Solar Supply</button>
-        <button class="tab" data-sim="filtration">3. Filtration</button>
-        <button class="tab" data-sim="hardness">4. Hardness</button>
-        <button class="tab" data-sim="treatment">5. Treatment</button>
-        <div class="tabs__hint">Tip: Use sliders for continuous exploration.</div>
+        <button class="tab" data-sim="pumping">Pumping</button>
+        <button class="tab" data-sim="solar">Solar Supply</button>
+        <button class="tab" data-sim="filtration">Filtration</button>
+        <button class="tab" data-sim="hardness">Hardness</button>
+        <button class="tab" data-sim="treatment">Treatment</button>
       </aside>
 
       <section class="workspace" aria-live="polite">
@@ -42,7 +49,6 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <div class="muted">Chart.js is loaded via CDN. All logic runs locally.</div>
     </div>
   </footer>
 
