@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Water Pumping & Treatment System</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./">Water System Lab</a>
+    <nav class="nav">
+      <a class="nav__link is-active" href="./">Overview</a>
+      <a class="nav__link" href="simulations.html">Simulations</a>
+      <a class="nav__link" href="model.html">Scientific Model</a>
+      <a class="nav__link" href="impact.html">Impact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <h1 class="hero__title">Water pumping, energy supply, filtration, hardness and treatment — in one coherent system.</h1>
+        <p class="hero__subtitle">A professional, client‑side engineering demonstrator that links inputs to measurable outcomes with transparent models and real‑time plots.</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="simulations.html">Open Simulations</a>
+          <a class="btn" href="model.html">View Scientific Model</a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__title">System Map</div>
+        <div class="system-map" role="img" aria-label="System diagram">
+          <div class="system-node">Well + Pump</div>
+          <div class="system-arrow">→</div>
+          <div class="system-node">Tank</div>
+          <div class="system-arrow">→</div>
+          <div class="system-node">Mechanical Filter</div>
+          <div class="system-arrow">→</div>
+          <div class="system-node">Hardness Lab</div>
+          <div class="system-arrow">→</div>
+          <div class="system-node">Chemical Treatment</div>
+          <div class="system-arrow">↺</div>
+          <div class="system-node">Solar Supply</div>
+        </div>
+        <div class="panel__note">Each module is interactive and can be explored independently.</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <a class="card" href="simulations.html#pumping">
+        <div class="card__kicker">Simulation 1</div>
+        <div class="card__title">Water Pumping System</div>
+        <div class="card__body">Depth, power, efficiency → flow rate, tank fill, pump status.</div>
+      </a>
+      <a class="card" href="simulations.html#solar">
+        <div class="card__kicker">Simulation 2</div>
+        <div class="card__title">Solar Energy Supply</div>
+        <div class="card__body">Irradiance, area, efficiency → available power to run the pump.</div>
+      </a>
+      <a class="card" href="simulations.html#filtration">
+        <div class="card__kicker">Simulation 3</div>
+        <div class="card__title">Mechanical Filtration</div>
+        <div class="card__body">Turbidity and filter thickness → clarity and flow reduction.</div>
+      </a>
+      <a class="card" href="simulations.html#hardness">
+        <div class="card__kicker">Simulation 4</div>
+        <div class="card__title">Hard Water Analysis</div>
+        <div class="card__body">Ca²⁺, Mg²⁺, pH → hardness class and scale risk.</div>
+      </a>
+      <a class="card" href="simulations.html#treatment">
+        <div class="card__kicker">Simulation 5</div>
+        <div class="card__title">Chemical Treatment</div>
+        <div class="card__body">Treatment choice and dosage → reduced hardness + side effects.</div>
+      </a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div>Client-side engineering demonstrator (vanilla JS + Chart.js).</div>
+      <div class="muted">No backend. No physics engines. Transparent assumptions.</div>
+    </div>
+  </footer>
+</body>
+</html>

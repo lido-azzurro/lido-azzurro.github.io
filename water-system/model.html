@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scientific Model — Water System Lab</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./">Water System Lab</a>
+    <nav class="nav">
+      <a class="nav__link" href="./">Overview</a>
+      <a class="nav__link" href="simulations.html">Simulations</a>
+      <a class="nav__link is-active" href="model.html">Scientific Model</a>
+      <a class="nav__link" href="impact.html">Impact</a>
+    </nav>
+  </header>
+
+  <main class="container prose">
+    <h1 class="page-title">Scientific Model</h1>
+
+    <div class="callout">
+      <div class="callout__title">Model philosophy</div>
+      <div class="callout__body">We keep models simple enough for interactive exploration while preserving correct cause → effect structure, consistent units, and realistic constraints.</div>
+    </div>
+
+    <h2>Pumping (fluid + energy balance)</h2>
+    <p>Hydraulic power required to lift water from depth <span class="mono">h</span> at volumetric flow <span class="mono">Q</span> is:</p>
+    <div class="formula">P = ρ · g · h · Q / η</div>
+    <p>Where <span class="mono">ρ</span> is water density, <span class="mono">g</span> gravity, and <span class="mono">η</span> pump efficiency (0–1). The simulation enforces operational limits (insufficient power / overload).</p>
+
+    <h2>Solar power supply</h2>
+    <p>Electrical power from photovoltaic panels is approximated by:</p>
+    <div class="formula">P = G · A · η</div>
+    <p>Where <span class="mono">G</span> is irradiance, <span class="mono">A</span> panel area, and <span class="mono">η</span> panel efficiency.</p>
+
+    <h2>Filtration (clarity vs. head loss)</h2>
+    <p>Mechanical filtration is modeled as a turbidity reduction that improves with thickness, while flow decreases due to added resistance. This is a simplified representation of pressure drop through porous media.</p>
+
+    <h2>Hardness and treatment (chemistry)</h2>
+    <p>Hardness is based on Ca²⁺ and Mg²⁺ expressed as CaCO₃ equivalents. Treatment modules apply simplified removal curves and report side effects (e.g., pH shift, sludge).</p>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="muted">These models are intentionally simplified and meant for conceptual understanding and parameter sensitivity.</div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simulations — Water System Lab</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./">Water System Lab</a>
+    <nav class="nav">
+      <a class="nav__link" href="./">Overview</a>
+      <a class="nav__link is-active" href="simulations.html">Simulations</a>
+      <a class="nav__link" href="model.html">Scientific Model</a>
+      <a class="nav__link" href="impact.html">Impact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="sim-header">
+      <h1 class="page-title">Simulations</h1>
+      <p class="muted">Select a module. Inputs update outputs in real time. Models are simplified but physically/chemically consistent.</p>
+    </section>
+
+    <section class="sim-layout">
+      <aside class="tabs" aria-label="Simulation selector">
+        <button class="tab" data-sim="pumping">1. Pumping</button>
+        <button class="tab" data-sim="solar">2. Solar Supply</button>
+        <button class="tab" data-sim="filtration">3. Filtration</button>
+        <button class="tab" data-sim="hardness">4. Hardness</button>
+        <button class="tab" data-sim="treatment">5. Treatment</button>
+        <div class="tabs__hint">Tip: Use sliders for continuous exploration.</div>
+      </aside>
+
+      <section class="workspace" aria-live="polite">
+        <div id="simRoot" class="workspace__card"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="muted">Chart.js is loaded via CDN. All logic runs locally.</div>
+    </div>
+  </footer>
+
+  <script type="module" src="assets/js/simulations/app.js"></script>
+</body>
+</html>
