@@ -77,12 +77,14 @@ export const filtration = {
                   <div class="muted" style="font-size:12px;margin-bottom:8px">Inlet</div>
                   <div class="water-col">
                     <div id="waterIn" class="water-fill"></div>
+                    <div id="inParticles" class="particle-layer" aria-hidden="true"></div>
                     <div id="shimmerIn" class="water-shimmer"></div>
                   </div>
                 </div>
 
                 <div class="filter-core">
                   <div id="layers" class="filter-layers"></div>
+                  <div id="trap" class="filter-trap" aria-hidden="true"></div>
                   <div class="flow-bar"><div id="flowFill" class="flow-bar__fill"></div></div>
                 </div>
 
@@ -90,6 +92,7 @@ export const filtration = {
                   <div class="muted" style="font-size:12px;margin-bottom:8px">Outlet</div>
                   <div class="water-col">
                     <div id="waterOut" class="water-fill"></div>
+                    <div id="outParticles" class="particle-layer" aria-hidden="true"></div>
                     <div id="shimmerOut" class="water-shimmer"></div>
                   </div>
                 </div>
@@ -117,9 +120,12 @@ export const filtration = {
     const clarityEl = $('#clarity');
     const waterInEl = $('#waterIn');
     const waterOutEl = $('#waterOut');
+    const inParticlesEl = $('#inParticles');
+    const outParticlesEl = $('#outParticles');
     const shimmerInEl = $('#shimmerIn');
     const shimmerOutEl = $('#shimmerOut');
     const layersEl = $('#layers');
+    const trapEl = $('#trap');
     const flowFillEl = $('#flowFill');
 
     function turbidityToColor(t){
@@ -139,6 +145,109 @@ export const filtration = {
       const clarityGainPct = turbIn <= 0 ? 0 : 100 * (1 - (turbOut / turbIn));
 
       return { turbIn, turbOut, flowRemainPct, flowReductionPct, clarityGainPct };
+    }
+
+    const particleState = {
+      in: [],
+      out: [],
+      rafId: 0,
+      lastT: performance.now(),
+      trapAcc: 0,
+      trapDots: []
+    };
+
+    function makeParticle(container){
+      const d = document.createElement('div');
+      d.className = 'particle';
+      container.appendChild(d);
+      return {
+        el: d,
+        x: Math.random(),
+        y: Math.random(),
+        vx: 0.2 + 0.6 * Math.random(),
+        vy: (Math.random() - 0.5) * 0.12
+      };
+    }
+
+    function setParticleClass(p, turbPct){
+      p.el.classList.add('is-on');
+      p.el.classList.toggle('is-light', turbPct < 25);
+      p.el.classList.toggle('is-mid', turbPct >= 25 && turbPct < 60);
+      p.el.classList.toggle('is-dark', turbPct >= 60);
+    }
+
+    function ensureParticleCount(list, container, n){
+      while (list.length < n) list.push(makeParticle(container));
+      while (list.length > n){
+        const p = list.pop();
+        p.el.remove();
+      }
+    }
+
+    function addTrapDot(){
+      const d = document.createElement('div');
+      d.className = 'trap-dot';
+      d.style.left = `${(5 + 90 * Math.random()).toFixed(1)}%`;
+      d.style.top = `${(5 + 90 * Math.random()).toFixed(1)}%`;
+      trapEl.appendChild(d);
+      particleState.trapDots.push(d);
+      const MAX = 120;
+      if (particleState.trapDots.length > MAX){
+        const old = particleState.trapDots.shift();
+        if (old) old.remove();
+      }
+    }
+
+    function animate(){
+      const now = performance.now();
+      const dt = Math.min(0.05, (now - particleState.lastT) / 1000);
+      particleState.lastT = now;
+
+      const r = calc();
+      const flow01 = clamp(r.flowRemainPct / 100, 0.05, 1);
+
+      const inletCount = Math.round(clamp(30 + 110 * (r.turbIn / 100), 20, 140));
+      const outletCount = Math.round(clamp(15 + 90 * (r.turbOut / 100), 8, 110));
+      ensureParticleCount(particleState.in, inParticlesEl, inletCount);
+      ensureParticleCount(particleState.out, outParticlesEl, outletCount);
+
+      for (const p of particleState.in){
+        setParticleClass(p, r.turbIn);
+        p.x += p.vx * dt * (0.45 + 0.9 * flow01);
+        p.y += p.vy * dt;
+        if (p.x > 1.05){
+          p.x = -0.05;
+          p.y = Math.random();
+        }
+        if (p.y < -0.05) p.y = 1.05;
+        if (p.y > 1.05) p.y = -0.05;
+        p.el.style.left = `${(p.x * 100).toFixed(2)}%`;
+        p.el.style.top = `${(p.y * 100).toFixed(2)}%`;
+      }
+
+      for (const p of particleState.out){
+        setParticleClass(p, r.turbOut);
+        p.x += p.vx * dt * (0.55 + 1.05 * flow01);
+        p.y += p.vy * dt;
+        if (p.x > 1.05){
+          p.x = -0.05;
+          p.y = Math.random();
+        }
+        if (p.y < -0.05) p.y = 1.05;
+        if (p.y > 1.05) p.y = -0.05;
+        p.el.style.left = `${(p.x * 100).toFixed(2)}%`;
+        p.el.style.top = `${(p.y * 100).toFixed(2)}%`;
+      }
+
+      const thick01 = clamp(state.thicknessCm / 25, 0, 1);
+      const trapRate = (r.turbIn / 100) * thick01 * (0.5 + 1.2 * flow01);
+      particleState.trapAcc += trapRate * dt * 18;
+      while (particleState.trapAcc >= 1){
+        particleState.trapAcc -= 1;
+        addTrapDot();
+      }
+
+      particleState.rafId = requestAnimationFrame(animate);
     }
 
     function rebuildLayers(){
@@ -233,9 +342,12 @@ export const filtration = {
     syncFromInputs();
     sample();
     timerId = window.setInterval(sample, 1000);
+    particleState.lastT = performance.now();
+    particleState.rafId = requestAnimationFrame(animate);
 
     return () => {
       window.clearInterval(timerId);
+      cancelAnimationFrame(particleState.rafId);
       if (chart) chart.destroy();
     };
   }

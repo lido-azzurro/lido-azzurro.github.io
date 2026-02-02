@@ -80,11 +80,13 @@ export const solar = {
           <div class="sim-card">
             <div class="sim-card__title">Visualization</div>
             <div class="solar-scene">
+              <div id="sky" class="solar-sky" aria-hidden="true"></div>
               <div id="sun" class="solar-sun" aria-hidden="true"></div>
               <div id="cloud" class="solar-cloud" aria-hidden="true"></div>
-              <div class="solar-panel" aria-hidden="true">
+              <div id="panel" class="solar-panel" aria-hidden="true">
                 <div class="solar-panel__glow" id="panelGlow"></div>
-                <div class="solar-panel__grid"></div>
+                <div id="panelCells" class="solar-panel__grid"></div>
+                <div class="solar-panel__reflect" aria-hidden="true"></div>
               </div>
               <div class="energy-link" aria-hidden="true">
                 <div id="energyFlow" class="energy-link__flow"></div>
@@ -94,7 +96,10 @@ export const solar = {
                   <div class="muted" style="font-size:12px">Pump</div>
                   <div id="pumpLabel" style="font-weight:800">Offline</div>
                 </div>
-                <div id="pumpLight" class="pump-light" aria-hidden="true"></div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div id="pumpBody" class="pump-body" aria-hidden="true"><div class="pump-rotor"></div></div>
+                  <div id="pumpLight" class="pump-light" aria-hidden="true"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -118,12 +123,24 @@ export const solar = {
     const pValEl = $('#pVal');
     const marginEl = $('#margin');
     const statusEl = $('#status');
+    const skyEl = $('#sky');
     const sunEl = $('#sun');
     const cloudEl = $('#cloud');
+    const panelEl = $('#panel');
     const panelGlowEl = $('#panelGlow');
+    const panelCellsEl = $('#panelCells');
     const energyFlowEl = $('#energyFlow');
     const pumpLightEl = $('#pumpLight');
+    const pumpBodyEl = $('#pumpBody');
     const pumpLabelEl = $('#pumpLabel');
+
+    const cells = [];
+    for (let i = 0; i < 20; i++){
+      const d = document.createElement('div');
+      d.className = 'solar-cell';
+      panelCellsEl.appendChild(d);
+      cells.push(d);
+    }
 
     function calc(){
       const eff01 = clamp(state.effPct / 100, 0, 1);
@@ -155,21 +172,40 @@ export const solar = {
       const irr01 = clamp(state.irradiance / 1100, 0, 1);
       const p01 = clamp(r.powerW / (CONSTANTS.REQUIRED_PUMP_W * 1.6), 0, 1);
 
+      skyEl.classList.toggle('is-dark', irr01 < 0.25);
+      skyEl.style.opacity = String(0.25 + 0.75 * irr01);
+
       sunEl.style.opacity = String(0.25 + 0.75 * irr01);
       sunEl.style.transform = `scale(${0.88 + 0.18 * irr01})`;
 
-      const cloudy = state.irradiance < 250;
-      cloudEl.style.opacity = cloudy ? '1' : '0';
-      cloudEl.style.transform = cloudy ? 'translateX(0px)' : 'translateX(-10px)';
+      sunEl.style.setProperty('--glow', String(0.4 + 0.9 * irr01));
+      const sunGlow = sunEl.querySelector(':scope');
+      if (sunGlow && sunGlow.style) {
+        // no-op: placeholder to keep structure unchanged
+      }
+
+      const cloud01 = clamp((250 - state.irradiance) / 250, 0, 1);
+      cloudEl.style.opacity = String(cloud01);
+      cloudEl.style.transform = cloud01 > 0.05 ? 'translateX(0px)' : 'translateX(-10px)';
 
       panelGlowEl.style.opacity = String(0.05 + 0.65 * p01);
 
+      const activeCells = Math.round(p01 * cells.length);
+      for (let i = 0; i < cells.length; i++){
+        cells[i].classList.toggle('is-on', i < activeCells);
+      }
+
       const on = r.status === 'Operating';
       pumpLightEl.classList.toggle('is-on', on);
+      pumpBodyEl.classList.toggle('is-on', on);
       pumpLabelEl.textContent = on ? 'Online' : 'Offline';
 
       energyFlowEl.style.opacity = on ? '1' : '0';
-      energyFlowEl.style.width = on ? '100%' : '0%';
+
+      panelEl.classList.toggle('is-active', on);
+
+      const speedS = 1.6 - 1.2 * p01;
+      energyFlowEl.style.animationDuration = `${clamp(speedS, 0.35, 1.6)}s`;
     }
 
     irrEl.addEventListener('input', syncFromInputs);

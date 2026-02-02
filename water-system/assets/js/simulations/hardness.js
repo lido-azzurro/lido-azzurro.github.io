@@ -86,6 +86,7 @@ export const hardness = {
                   <div class="viz-title">Beaker</div>
                   <div class="beaker">
                     <div id="solution" class="beaker__solution"></div>
+                    <div id="ions" class="ion-layer" aria-hidden="true"></div>
                     <div class="beaker__meniscus"></div>
                   </div>
                 </div>
@@ -97,7 +98,12 @@ export const hardness = {
                   </div>
                   <div>
                     <div class="viz-title">Equipment alert</div>
-                    <div id="alert" class="warn is-muted">Stable</div>
+                    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+                      <div class="equip">
+                        <div class="pipe-icon" aria-hidden="true"><div id="scale" class="pipe-scale"></div></div>
+                      </div>
+                      <div id="alert" class="warn is-muted">Stable</div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -125,8 +131,60 @@ export const hardness = {
     const riskBadgeEl = $('#riskBadge');
     const riskScoreEl = $('#riskScore');
     const solutionEl = $('#solution');
+    const ionsEl = $('#ions');
     const pinEl = $('#pin');
+    const scaleEl = $('#scale');
     const alertEl = $('#alert');
+
+    const ionState = {
+      ca: [],
+      mg: [],
+      rafId: 0,
+      lastT: performance.now()
+    };
+
+    function makeIon(kind){
+      const d = document.createElement('div');
+      d.className = `ion ${kind}`;
+      ionsEl.appendChild(d);
+      return {
+        el: d,
+        x: Math.random(),
+        y: Math.random(),
+        vx: (Math.random() - 0.5) * 0.06,
+        vy: (Math.random() - 0.5) * 0.06
+      };
+    }
+
+    function ensureIons(list, kind, n){
+      while (list.length < n) list.push(makeIon(kind));
+      while (list.length > n){
+        const ion = list.pop();
+        ion.el.remove();
+      }
+    }
+
+    function stepIons(speed){
+      const now = performance.now();
+      const dt = Math.min(0.05, (now - ionState.lastT) / 1000);
+      ionState.lastT = now;
+
+      const move = (ion) => {
+        ion.x += ion.vx * dt * speed;
+        ion.y += ion.vy * dt * speed;
+        if (ion.x < 0) ion.x = 1;
+        if (ion.x > 1) ion.x = 0;
+        if (ion.y < 0) ion.y = 1;
+        if (ion.y > 1) ion.y = 0;
+        ion.el.style.left = `${(ion.x * 100).toFixed(2)}%`;
+        ion.el.style.top = `${(ion.y * 100).toFixed(2)}%`;
+      };
+
+      for (const ion of ionState.ca) move(ion);
+      for (const ion of ionState.mg) move(ion);
+
+      ionState.rafId = requestAnimationFrame(() => stepIons(speed));
+    }
 
     function classifyHardness(h){
       if (h < 60) return 'Soft';
@@ -177,7 +235,16 @@ export const hardness = {
 
       const hue = 120 - 120 * clamp(r.hardness / 220, 0, 1);
       solutionEl.style.background = `linear-gradient(180deg, hsla(${hue}, 85%, 65%, .45), hsla(${hue}, 85%, 55%, .18))`;
-      solutionEl.style.filter = `saturate(${1 + 0.35 * r.score})`;
+      const ph01 = clamp((state.ph - 6) / (9.2 - 6), 0, 1);
+      solutionEl.style.filter = `saturate(${1 + 0.35 * r.score}) brightness(${0.95 + 0.12 * ph01})`;
+
+      const caN = Math.round(clamp((state.caMgL / 250) * 42, 0, 42));
+      const mgN = Math.round(clamp((state.mgMgL / 150) * 32, 0, 32));
+      ensureIons(ionState.ca, 'ca', caN);
+      ensureIons(ionState.mg, 'mg', mgN);
+
+      scaleEl.classList.toggle('is-on', r.score > 0.35);
+      scaleEl.style.opacity = String(clamp(r.score, 0, 1));
 
       const high = r.risk === 'High risk';
       alertEl.classList.toggle('is-muted', !high);
@@ -241,9 +308,12 @@ export const hardness = {
     syncFromInputs();
     sample();
     timerId = window.setInterval(sample, 1000);
+    ionState.lastT = performance.now();
+    ionState.rafId = requestAnimationFrame(() => stepIons(0.7));
 
     return () => {
       window.clearInterval(timerId);
+      cancelAnimationFrame(ionState.rafId);
       if (chart) chart.destroy();
     };
   }

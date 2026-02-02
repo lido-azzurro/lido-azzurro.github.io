@@ -89,6 +89,7 @@ export const treatment = {
                 <div class="viz-title">Before</div>
                 <div class="treat-water">
                   <div id="beforeFill" class="treat-water__fill"></div>
+                  <div id="ionsBefore" class="treat-ion-layer" aria-hidden="true"></div>
                 </div>
                 <div class="muted" style="font-size:12px;margin-top:10px">Hardness: <span class="mono">${CONSTANTS.INLET_HARDNESS_MG_L}</span> mg/L</div>
               </div>
@@ -96,6 +97,9 @@ export const treatment = {
                 <div class="viz-title">After</div>
                 <div class="treat-water">
                   <div id="afterFill" class="treat-water__fill"></div>
+                  <div id="ionsAfter" class="treat-ion-layer" aria-hidden="true"></div>
+                  <div id="reaction" class="reaction" aria-hidden="true"></div>
+                  <div id="sludge" class="sludge" aria-hidden="true"></div>
                   <div id="bubbles" class="bubbles"></div>
                 </div>
                 <div class="muted" style="font-size:12px;margin-top:10px">pH: <span class="mono">${CONSTANTS.INLET_PH.toFixed(1)}</span> → <span id="phOut" class="mono"></span></div>
@@ -124,7 +128,97 @@ export const treatment = {
     const warnEl = $('#warn');
     const beforeFillEl = $('#beforeFill');
     const afterFillEl = $('#afterFill');
+    const ionsBeforeEl = $('#ionsBefore');
+    const ionsAfterEl = $('#ionsAfter');
+    const reactionEl = $('#reaction');
+    const sludgeEl = $('#sludge');
     const bubblesEl = $('#bubbles');
+
+    const vizState = {
+      before: [],
+      after: [],
+      rafId: 0,
+      lastT: performance.now(),
+      dropletTimer: 0
+    };
+
+    function makeIon(container, kind){
+      const d = document.createElement('div');
+      d.className = `treat-ion ${kind}`;
+      container.appendChild(d);
+      return {
+        el: d,
+        x: Math.random(),
+        y: Math.random(),
+        vx: (Math.random() - 0.5) * 0.08,
+        vy: (Math.random() - 0.5) * 0.08
+      };
+    }
+
+    function ensureIons(list, container, n, mix){
+      while (list.length < n){
+        const kind = Math.random() < mix ? 'ca is-on' : 'mg is-on';
+        list.push(makeIon(container, kind));
+      }
+      while (list.length > n){
+        const ion = list.pop();
+        ion.el.remove();
+      }
+      for (const ion of list) ion.el.classList.add('is-on');
+    }
+
+    function dropOnce(intensity){
+      const host = afterFillEl.parentElement;
+      if (!host) return;
+      const d = document.createElement('div');
+      d.className = 'droplet';
+      d.style.left = `${(10 + 80 * Math.random()).toFixed(1)}%`;
+      d.style.opacity = String(0.55 + 0.35 * intensity);
+      host.appendChild(d);
+      window.setTimeout(() => d.remove(), 650);
+    }
+
+    function animate(){
+      const now = performance.now();
+      const dt = Math.min(0.05, (now - vizState.lastT) / 1000);
+      vizState.lastT = now;
+
+      const r = calc();
+      const removal01 = clamp(1 - (r.hardOut / CONSTANTS.INLET_HARDNESS_MG_L), 0, 1);
+      const afterRatio = clamp(r.hardOut / CONSTANTS.INLET_HARDNESS_MG_L, 0, 1);
+
+      const beforeN = 42;
+      const afterN = Math.round(beforeN * (0.22 + 0.78 * afterRatio));
+
+      ensureIons(vizState.before, ionsBeforeEl, beforeN, 0.58);
+      ensureIons(vizState.after, ionsAfterEl, afterN, 0.58);
+
+      const move = (ion, speed, settle01) => {
+        ion.x += ion.vx * dt * speed;
+        ion.y += ion.vy * dt * speed;
+        ion.y += dt * 0.05 * settle01;
+        if (ion.x < 0) ion.x = 1;
+        if (ion.x > 1) ion.x = 0;
+        if (ion.y < 0) ion.y = 1;
+        if (ion.y > 1) ion.y = 0;
+        ion.el.style.left = `${(ion.x * 100).toFixed(2)}%`;
+        ion.el.style.top = `${(ion.y * 100).toFixed(2)}%`;
+      };
+
+      const settle = clamp(removal01 * 0.8 + (r.overdose ? 0.35 : 0), 0, 1);
+      for (const ion of vizState.before) move(ion, 0.65, 0.0);
+      for (const ion of vizState.after) move(ion, 0.55, settle);
+
+      const reacting = r.effectivenessPct > 5;
+      bubblesEl.style.opacity = reacting ? '1' : '0';
+      reactionEl.classList.toggle('is-on', reacting);
+
+      const sludgeOn = r.overdose || r.sideEffect > 0.55;
+      sludgeEl.classList.toggle('is-on', sludgeOn);
+      sludgeEl.style.height = sludgeOn ? `${(6 + 22 * clamp(settle, 0, 1)).toFixed(0)}%` : '0%';
+
+      vizState.rafId = requestAnimationFrame(animate);
+    }
 
     function calc(){
       const method = METHODS[state.method] || METHODS.lime;
@@ -181,7 +275,15 @@ export const treatment = {
       afterFillEl.style.background = hardnessColor(r.hardOut);
 
       const reacting = r.effectivenessPct > 5;
-      bubblesEl.style.opacity = reacting ? '1' : '0';
+      reactionEl.classList.toggle('is-on', reacting);
+
+      const intensity = clamp(state.dosePct / 100, 0, 1);
+      window.clearInterval(vizState.dropletTimer);
+      if (reacting && intensity > 0.05){
+        const ms = 900 - 700 * intensity;
+        vizState.dropletTimer = window.setInterval(() => dropOnce(intensity), clamp(ms, 180, 900));
+        dropOnce(intensity);
+      }
 
       const warn = r.overdose || r.sideEffect > 0.45;
       warnEl.classList.toggle('is-muted', !warn);
@@ -247,9 +349,13 @@ export const treatment = {
     syncFromInputs();
     sample();
     timerId = window.setInterval(sample, 1000);
+    vizState.lastT = performance.now();
+    vizState.rafId = requestAnimationFrame(animate);
 
     return () => {
       window.clearInterval(timerId);
+      window.clearInterval(vizState.dropletTimer);
+      cancelAnimationFrame(vizState.rafId);
       if (chart) chart.destroy();
     };
   }
