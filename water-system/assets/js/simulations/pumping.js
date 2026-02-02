@@ -6,7 +6,7 @@ export const pumping = {
       TANK_CAPACITY_L: 5000,
       MIN_FLOW_LPM: 2,
       BASE_RATED_HEAD_M: 110,
-      CHART_WINDOW_S: 90
+      CHART_MAX_POINTS: 60
     };
 
     const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -109,8 +109,8 @@ export const pumping = {
 
           <div class="sim-card">
             <div class="sim-card__title">Flow history</div>
-            <canvas id="chart" height="130"></canvas>
-            <div class="muted" style="margin-top:8px">Window: last ${CONSTANTS.CHART_WINDOW_S}s</div>
+            <canvas id="chart" width="600" height="300"></canvas>
+            <div class="muted" style="margin-top:8px">Last ${CONSTANTS.CHART_MAX_POINTS} samples</div>
           </div>
         </section>
       </div>
@@ -189,7 +189,7 @@ export const pumping = {
     function pushSample(tS, flowLpm){
       series.t.push(tS);
       series.flow.push(flowLpm);
-      while (series.t.length > CONSTANTS.CHART_WINDOW_S){
+      while (series.t.length > CONSTANTS.CHART_MAX_POINTS){
         series.t.shift();
         series.flow.shift();
       }
@@ -211,8 +211,8 @@ export const pumping = {
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          responsive: false,
+          maintainAspectRatio: true,
           animation: false,
           plugins: {
             legend: { labels: { color: 'rgba(255,255,255,.78)' } }
