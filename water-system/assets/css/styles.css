@@ -42,7 +42,7 @@ a{color:inherit}
  .nav-menu a.is-current{background:rgba(42,167,255,.16);border:1px solid rgba(42,167,255,.22)}
 
 .hero{display:grid;grid-template-columns:1fr;gap:18px;align-items:stretch;margin-top:10px}
-.hero--with-bg{background-image:url('../water-plump.jpeg');background-size:cover;background-position:center;background-repeat:no-repeat;border-radius:var(--radius);padding:60px 40px;color:white;text-shadow:0 2px 4px rgba(0,0,0,0.5)}
+.hero--with-bg{background-image:url('/water-plump.jpeg');background-size:cover;background-position:center;background-repeat:no-repeat;border-radius:var(--radius);padding:60px 40px;color:white;text-shadow:0 2px 4px rgba(0,0,0,0.5)}
 .hero--with-bg .hero__title{color:white}
 .hero--with-bg .hero__subtitle{color:rgba(255,255,255,0.9)}
 .hero--with-bg .btn--primary{background:linear-gradient(135deg,rgba(255,255,255,.9),rgba(255,255,255,.8));color:var(--text);border-color:rgba(255,255,255,.5)}
@@ -58,7 +58,7 @@ a{color:inherit}
 .panel__note{margin-top:10px;color:var(--muted);font-size:14px}
 
 .cta-section{padding:80px 40px;margin-top:40px;border-radius:var(--radius);text-align:center;color:white;text-shadow:0 2px 4px rgba(0,0,0,0.5)}
-.cta-section--with-bg{background-image:url('../water-plump2.jpeg');background-size:cover;background-position:center;background-repeat:no-repeat}
+.cta-section--with-bg{background-image:url('/water-plump2.jpeg');background-size:cover;background-position:center;background-repeat:no-repeat}
 .cta-title{font-size:32px;margin-bottom:24px;color:white}
 .cta-content{max-width:600px;margin:0 auto}
 
