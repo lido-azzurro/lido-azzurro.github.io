@@ -93,6 +93,19 @@ export const pumping = {
                 </div>
               </div>
 
+              <div class="pump-rig">
+                <div class="pump-rig__label">Pump</div>
+                <div id="pumpUnit" class="pump-unit">
+                  <div class="pump-unit__head"></div>
+                  <div class="pump-unit__body"></div>
+                  <div class="pump-unit__rotor"></div>
+                  <div class="pump-unit__impeller"></div>
+                </div>
+                <div id="flowPath" class="flow-path">
+                  <div class="flow-path__water"></div>
+                </div>
+              </div>
+
               <div class="tank" aria-label="Storage tank filling">
                 <div class="tank__label">Tank</div>
                 <div class="tank__shell">
@@ -130,6 +143,9 @@ export const pumping = {
     const tankFillEl = $('#tankFill');
     const wellWaterEl = $('#wellWater');
     const pipeEl = $('#pipe');
+    const pumpUnitEl = $('#pumpUnit');
+    const flowPathEl = $('#flowPath');
+    const flowPathWaterEl = flowPathEl?.querySelector('.flow-path__water');
 
     function calc(){
       const depthM = Math.max(1, state.depthM);
@@ -239,6 +255,23 @@ export const pumping = {
 
       pipeEl.classList.toggle('is-flowing', result.flowLpm >= CONSTANTS.MIN_FLOW_LPM);
       pipeEl.dataset.stress = result.stress >= 0.9 ? 'high' : result.stress >= 0.7 ? 'mid' : 'low';
+
+      // Control pump unit appearance and animations
+      if (pumpUnitEl) {
+        pumpUnitEl.classList.remove('is-working', 'is-insufficient', 'is-overloaded');
+        if (result.status === 'Working') {
+          pumpUnitEl.classList.add('is-working');
+        } else if (result.status === 'Insufficient power') {
+          pumpUnitEl.classList.add('is-insufficient');
+        } else if (result.status === 'Overloaded') {
+          pumpUnitEl.classList.add('is-overloaded');
+        }
+      }
+
+      // Control flow path animation
+      if (flowPathWaterEl) {
+        flowPathWaterEl.classList.toggle('is-on', result.flowLpm >= CONSTANTS.MIN_FLOW_LPM);
+      }
     }
 
     function loop(now){
